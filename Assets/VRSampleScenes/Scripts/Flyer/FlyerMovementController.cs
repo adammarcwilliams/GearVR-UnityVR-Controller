@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
-using UnityEngine.VR;
+using UnityEngine.XR;
 using VRStandardAssets.Common;
 
 namespace VRStandardAssets.Flyer
@@ -30,6 +30,22 @@ namespace VRStandardAssets.Flyer
         private const float k_ExpDampingCoef = -20f;                // The coefficient used to damp the movement of the flyer.
         private const float k_BankingCoef = 3f;                     // How much the ship banks when it moves.
 
+        protected Quaternion GetOrientation
+        {
+            get
+            {
+                OVRInput.Controller controller = OVRInput.GetConnectedControllers();
+                if ((controller & OVRInput.Controller.LTrackedRemote) != OVRInput.Controller.None)
+                {
+                    return OVRInput.GetLocalControllerRotation(OVRInput.Controller.LTrackedRemote);
+                }
+                else if ((controller & OVRInput.Controller.RTrackedRemote) != OVRInput.Controller.None)
+                {
+                    return OVRInput.GetLocalControllerRotation(OVRInput.Controller.RTrackedRemote);
+                }
+                return InputTracking.GetLocalRotation(XRNode.Head);
+            }
+        }
 
         private void Start ()
         {
@@ -71,7 +87,7 @@ namespace VRStandardAssets.Flyer
             while (m_IsGameRunning)
             {
                 // Set the target marker position to a point forward of the camera multiplied by the distance from the camera.
-                Quaternion headRotation = UnityEngine.XR.InputTracking.GetLocalRotation (UnityEngine.XR.XRNode.Head);
+                Quaternion headRotation = GetOrientation;
                 m_TargetMarker.position = m_Camera.position + (headRotation * Vector3.forward) * m_DistanceFromCamera;
 
                 // Move the camera container forward.

@@ -10,6 +10,7 @@ namespace VRStandardAssets.Flyer
     // together.
     public class FlyerGameController : MonoBehaviour
     {
+        [SerializeField] private VREyeRaycaster m_EyeRaycaster;
         [SerializeField] private int m_GameDuration = 30;                                   // The duration of the game
         [SerializeField] private float m_IntroOutroFadeDuration = 0.5f;                     // The duration of the fade before and after the intro
         [SerializeField] private SelectionSlider m_SelectionSlider;                         // The slider needed to start the game.
@@ -91,6 +92,11 @@ namespace VRStandardAssets.Flyer
 
         private IEnumerator PlayPhase ()
         {
+            if (m_EyeRaycaster != null)
+            {
+                m_EyeRaycaster.ShowLineRenderer = false;
+            }
+
             // The game is now running.
             m_IsGameRunning = true;
 
@@ -117,6 +123,11 @@ namespace VRStandardAssets.Flyer
             
             // Upon reaching this point either the time has run out or the flyer is dead, either way the game is no longer running.
             m_IsGameRunning = false;
+
+            if (m_EyeRaycaster != null)
+            {
+                m_EyeRaycaster.ShowLineRenderer = true;
+            }
         }
 
 
